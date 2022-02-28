@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Grid, Button, Typography } from "@material-ui/core";
 import { withRouter } from "./WithRouter";
+import CreateRoomPage from "./CreateRoomPage";
 
 
 
@@ -13,6 +14,7 @@ class Room extends Component {
       votesToSkip: 2,
       guestCanPause: false,
       isHost: false,
+      showSettings: false,
     };
     this.roomCode = this.props.roomCode
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
