@@ -6,6 +6,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
   }
+
   render() {
     return (
       <div className="center">
@@ -15,5 +16,5 @@ export default class App extends Component {
   }
 }
 
-const appDiv = document.querySelector("#app");
+const appDiv = document.getElementById("app");
 render(<App />, appDiv);

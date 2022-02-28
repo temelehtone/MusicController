@@ -8,8 +8,10 @@ import {
   Routes,
   Route,
   Link,
-  Redirect,
+  Navigate
 } from "react-router-dom";
+
+
 
 export default class HomePage extends Component {
   constructor(props) {
@@ -17,21 +19,23 @@ export default class HomePage extends Component {
     this.state = {
       roomCode: null,
     };
+    this.clearRoomCode = this.clearRoomCode.bind(this);
+    this.renderHomePage = this.renderHomePage.bind(this);
   }
 
   async componentDidMount() {
-    fetch('/api/user-in-room')
+    fetch("/api/user-in-room")
       .then((response) => response.json())
       .then((data) => {
-        
         this.setState({
           roomCode: data.code,
         });
       });
   }
 
-  HomePagerendering() {
+  renderHomePage() {
     return (
+      
       <Grid container spacing={3}>
         <Grid item xs={12} align="center">
           <Typography variant="h3" compact="h3">
@@ -49,25 +53,33 @@ export default class HomePage extends Component {
           </ButtonGroup>
         </Grid>
       </Grid>
-    ); 
+    );
   }
 
-  renderHomePage() {
-    var page;
-    this.state.roomCode ? page = <Redirect to={`/room/${this.state.roomCode}`} />: page = this.HomePagerendering();
-    console.log(page)
-    return page;
+  clearRoomCode() {
+    this.setState({
+      roomCode: null,
+    });
   }
 
   render() {
     return (
+      
       <Router>
         <Routes>
-          <Route exact path="/" render={() => { return this.renderHomePage() }} />
-
+        <Route
+            exact
+            path="/"
+            element={this.state.roomCode ? <Navigate from="/" to={`/room/${this.state.roomCode}`} /> : this.renderHomePage()}
+          />
+          <Route path="/join" element={<RoomJoinPage />}  />
           <Route path="/create" element={<CreateRoomPage />} />
-          <Route path="/join" element={<RoomJoinPage />} />
-          <Route path="/room/:roomCode" element={<Room />} />
+          <Route
+            path="/room/:roomCode"
+            element={
+              <Room roomCode={this.state.roomCode} leaveRoomCallback={this.clearRoomCode} />
+            }
+          />
         </Routes>
       </Router>
     );
