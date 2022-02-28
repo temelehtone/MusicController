@@ -3,10 +3,6 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import { withRouter } from "./WithRouter";
 import CreateRoomPage from "./CreateRoomPage";
 
-
-
-
-
 class Room extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +12,8 @@ class Room extends Component {
       isHost: false,
       showSettings: false,
     };
-    this.roomCode = this.props.roomCode
+
+    this.roomCode = this.props.roomCode.roomCode;
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
     this.updateShowSettings = this.updateShowSettings.bind(this);
     this.renderSettingsButton = this.renderSettingsButton.bind(this);
@@ -38,7 +35,6 @@ class Room extends Component {
     }
     return cookieValue;
   }
-
 
   async getRoomDetails() {
     return fetch("/api/get-room" + "?code=" + this.roomCode)

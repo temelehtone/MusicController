@@ -77,7 +77,7 @@ export default class HomePage extends Component {
           <Route
             path="/room/:roomCode"
             element={
-              <Room roomCode={this.state.roomCode} leaveRoomCallback={this.clearRoomCode} />
+              <Room leaveRoomCallback={this.clearRoomCode} />
             }
           />
         </Routes>
