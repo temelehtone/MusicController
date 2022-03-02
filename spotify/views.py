@@ -14,7 +14,7 @@ from .models import Vote
 
 class AuthURL(APIView):
     def get(self, request, format=None):
-        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
+        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-read-email user-read-private'
 
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': scopes,
@@ -72,6 +72,7 @@ class CurrentSong(APIView):
         endpoint = "player/currently-playing"
         response = execute_spotify_api_request(host, endpoint)
 
+
         if 'error' in response or 'item' not in response:
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         
@@ -91,6 +92,7 @@ class CurrentSong(APIView):
             artist_string += name
         votes = len(Vote.objects.filter(room=room, song_id=song_id))
         song = {
+            'response': response,
             'title': item.get('name'),
             'artist': artist_string,
             'duration': duration,
@@ -99,7 +101,8 @@ class CurrentSong(APIView):
             'is_playing': is_playing,
             'votes': votes,
             'votes_required': room.votes_to_skip,
-            'id': song_id
+            'id': song_id,
+            'token': get_user_tokens(host).access_token
         }        
         self.update_room_song(room, song_id)
         return Response(song, status=status.HTTP_200_OK)

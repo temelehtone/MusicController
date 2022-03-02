@@ -10,6 +10,9 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow"
 import PauseIcon from "@material-ui/icons/Pause"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 
+const token = "BQAwqKyZ6C3OT2CW1WExnPZqijSB72QkH3xqGZX8P6OoBFI_3E64S9wQcdJsBSgCf9eAuXCR-Dvf9ng0kl6qhw-cVgOm9FrTKgRcxZ1pLqYcc3oEuxVYXIPCKq34wd6CNc1U0z4yKcosLT6u_cxprOgC0k5E";
+
+
 export default class MusicPlayer extends Component {
   constructor(props) {
     super(props);
@@ -45,6 +48,7 @@ export default class MusicPlayer extends Component {
         headers: {"Content-Type": "application/json", "X-CSRFToken": csrftoken }
     }
     fetch('/spotify/play', requestOptions)
+    this.audio.play()
   }
 
   skipSong() {
@@ -55,6 +59,9 @@ export default class MusicPlayer extends Component {
     }
     fetch("/spotify/skip", requestOptions)
   }
+
+
+    
 
   render() {
 
@@ -80,7 +87,7 @@ export default class MusicPlayer extends Component {
                       {this.props.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
                   </IconButton>
                   <IconButton onClick={() => this.skipSong()}>
-                      {this.props.votes} / {this.props.votes_required}
+                      {this.props.votes} / {this.props.votes_required} 
                       <SkipNextIcon />
                   </IconButton>
               </div>
