@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Grid, Button, Typography } from "@material-ui/core";
 import { withRouter } from "./WithRouter";
 import CreateRoomPage from "./CreateRoomPage";
+import MusicPlayer from "./MusicPlayer";
 
 class Room extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Room extends Component {
       isHost: false,
       showSettings: false,
       spotifyAuthenticated: false,
+      song: {},
     };
 
     this.roomCode = this.props.roomCode.roomCode;
@@ -21,8 +23,18 @@ class Room extends Component {
     this.renderSettings = this.renderSettings.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.authenticateSpotify = this.authenticateSpotify.bind(this);
+    this.getCurrentSong = this.getCurrentSong.bind(this);
     this.getRoomDetails();
   }
+
+  componentDidMount() {
+    this.interval = setInterval(this.getCurrentSong, 1000)
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval)
+  }
+
+
   getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -54,23 +66,42 @@ class Room extends Component {
           isHost: data.is_host,
         });
         if (this.state.isHost) {
-          this.authenticateSpotify()
+          this.authenticateSpotify();
         }
       });
   }
 
   authenticateSpotify() {
-    fetch("/spotify/is-authenticated").then(response => response.json()).then(data => {
-      this.setState({
-        spotifyAuthenticated: data.status
-      })
-      if (!data.status) {
-        fetch("/spotify/get-auth-url").then(response => response.json()).then(data => {
-          window.location.replace(data.url)
-        })
-      }
+    fetch("/spotify/is-authenticated")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          spotifyAuthenticated: data.status,
+        });
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+            .then((response) => response.json())
+            .then((data) => {
+              window.location.replace(data.url);
+            });
+        }
+      });
+  }
 
-    })
+  getCurrentSong() {
+    fetch("/spotify/current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        }
+        return response.json();
+      })
+      .then((data) => {
+  
+        this.setState({
+          song: data,
+        });
+      });
   }
 
   leaveButtonPressed() {
@@ -141,21 +172,7 @@ class Room extends Component {
             Code: {this.roomCode}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Votes: {this.state.votesToSkip}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Guest Can Pause: {this.state.guestCanPause.toString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Host: {this.state.isHost.toString()}
-          </Typography>
-        </Grid>
+        <MusicPlayer {...this.state.song}/>
         {this.state.isHost ? this.renderSettingsButton() : null}
         <Grid item xs={12} align="center">
           <Button
