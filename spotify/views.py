@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from urllib import response
 from django.shortcuts import render, redirect
 from flask import Response
@@ -14,7 +15,7 @@ from .models import Vote
 
 class AuthURL(APIView):
     def get(self, request, format=None):
-        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-read-email user-read-private'
+        scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-read-email user-read-private web-playback'
 
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
             'scope': scopes,
@@ -91,8 +92,9 @@ class CurrentSong(APIView):
             name = artist.get('name')
             artist_string += name
         votes = len(Vote.objects.filter(room=room, song_id=song_id))
+        
+
         song = {
-            'response': response,
             'title': item.get('name'),
             'artist': artist_string,
             'duration': duration,
@@ -102,7 +104,6 @@ class CurrentSong(APIView):
             'votes': votes,
             'votes_required': room.votes_to_skip,
             'id': song_id,
-            'token': get_user_tokens(host).access_token
         }        
         self.update_room_song(room, song_id)
         return Response(song, status=status.HTTP_200_OK)
@@ -118,7 +119,6 @@ class CurrentSong(APIView):
 class PauseSong(APIView):
     def put(self, request, format=None):
         room_code = self.request.session.get('room_code')
-        print(room_code)
         room = Room.objects.filter(code=room_code)[0]
         
         if self.request.session.session_key == room.host or room.guest_can_pause:
@@ -153,5 +153,14 @@ class SkipSong(APIView):
 
             
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+class GetAccessToken(APIView):
+    def get(self, request, format=None):
+        room_code = self.request.session.get('room_code')
+        room = Room.objects.filter(code=room_code)[0]
+        data = {
+           "access_token": get_user_tokens(room.host).access_token 
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 

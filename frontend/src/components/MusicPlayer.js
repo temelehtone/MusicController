@@ -9,6 +9,7 @@ import {
 import PlayArrowIcon from "@material-ui/icons/PlayArrow"
 import PauseIcon from "@material-ui/icons/Pause"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
+import WebPlayback from "./WebPlayBack";
 
 
 
@@ -47,7 +48,6 @@ export default class MusicPlayer extends Component {
         headers: {"Content-Type": "application/json", "X-CSRFToken": csrftoken }
     }
     fetch('/spotify/play', requestOptions)
-    this.audio.play()
   }
 
   skipSong() {
@@ -68,6 +68,7 @@ export default class MusicPlayer extends Component {
 
     return (
       <Card>
+        
         <Grid container alignItems="center">
           <Grid item align="center" xs={4}>
             <img src={this.props.image_url} height="100%" width="100%" />

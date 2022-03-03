@@ -97,9 +97,11 @@ class Room extends Component {
         return response.json();
       })
       .then((data) => {
+        
         this.setState({
           song: data,
         });
+        
       });
   }
 
